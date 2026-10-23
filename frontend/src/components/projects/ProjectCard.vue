@@ -23,6 +23,18 @@ const progress = computed(() =>
   Math.min(100, Math.max(0, Number(props.project.progress) || 0)),
 )
 
+const categoryLabels = {
+  crochet: 'Crochet',
+  knitting: 'Knitting',
+  scrapbooking: 'Scrapbooking',
+  painting: 'Painting',
+  embroidery: 'Embroidery',
+  beading: 'Beading',
+  clay_craft: 'Clay Craft',
+  sewing: 'Sewing',
+  other: 'Other',
+}
+
 function formatDate(date) {
   if (!date) return ''
 
@@ -55,7 +67,7 @@ function formatDate(date) {
       <span
         class="label-sticker absolute left-3 top-3 -rotate-3 bg-paper"
       >
-        {{ project.category }}
+        {{ categoryLabels[project.category] ?? project.category }}
       </span>
     </div>
 
