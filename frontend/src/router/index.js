@@ -7,6 +7,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import CreateProjectView from '@/views/CreateProjectView.vue'
 import ProjectDetailView from '@/views/ProjectDetailView.vue'
+import EditProjectView from '@/views/EditProjectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,7 +45,32 @@ const router = createRouter({
       component: ProjectDetailView,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/projects/:id/edit',
+      name: 'project-edit',
+      component: EditProjectView,
+      meta: { requiresAuth: true },
+    },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+
+    if (to.hash) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            el: to.hash,
+            behavior: 'smooth',
+            top: 96,
+          })
+        }, 100)
+      })
+    }
+
+    return { top: 0 }
+  },
 })
 
 router.beforeEach((to) => {
