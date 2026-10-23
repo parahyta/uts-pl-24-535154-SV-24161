@@ -3,8 +3,8 @@ import { reactive, ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Loader2 } from 'lucide-vue-next'
 
-import AuthLayout from '@/components/AuthLayout.vue'
-import PasswordInput from '@/components/PasswordInput.vue'
+import AuthLayout from '@/components/authentication/AuthLayout.vue'
+import PasswordInput from '@/components/authentication/PasswordInput.vue'
 import { registerUser } from '@/services/authService'
 
 const router = useRouter()
