@@ -1,5 +1,8 @@
+
 import { createRouter, createWebHistory } from 'vue-router'
+
 import LandingView from '@/views/LandingView.vue'
+import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 
@@ -10,6 +13,11 @@ const router = createRouter({
       path: '/',
       name: 'landing',
       component: LandingView,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
     },
     {
       path: '/register',
@@ -23,6 +31,24 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
   ],
+})
+
+router.beforeEach((to) => {
+  const token = localStorage.getItem('craftory_token')
+
+  if (to.meta.requiresAuth && !token) {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath },
+    }
+  }
+
+  if (
+    token &&
+    (to.path === '/login' || to.path === '/register')
+  ) {
+    return '/dashboard'
+  }
 })
 
 export default router

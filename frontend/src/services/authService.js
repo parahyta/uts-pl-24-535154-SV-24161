@@ -15,6 +15,29 @@ export async function registerUser(payload) {
   return response.data
 }
 
+export async function loginUser(email, password) {
+  const response = await api.post('/login', {
+    email,
+    password,
+  })
+
+  if (!response.data.token) {
+    throw new Error('Login succeeded but no token was returned.')
+  }
+
+  localStorage.setItem(TOKEN_KEY, response.data.token)
+
+  return response.data
+}
+
+export async function logoutUser() {
+  try {
+    await api.post('/logout')
+  } finally {
+    localStorage.removeItem(TOKEN_KEY)
+  }
+}
+
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY)
 }
