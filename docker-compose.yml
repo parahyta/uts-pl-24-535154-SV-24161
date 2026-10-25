@@ -46,10 +46,12 @@ services:
       db:
         condition: service_healthy
     expose:
-      - "8000"
-    command: >
-      sh -c "php artisan migrate --force &&
-      exec php artisan serve --host=0.0.0.0 --port=8000"
+      - "80"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        php artisan migrate --force &&
+        exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
     networks:
       - craftory-network
 
