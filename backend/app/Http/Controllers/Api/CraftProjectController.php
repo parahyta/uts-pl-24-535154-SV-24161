@@ -8,11 +8,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class CraftProjectController extends Controller
 {
     private function validateProject(Request $request): array
-    {
+    { try {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'category' => [
@@ -39,6 +40,20 @@ class CraftProjectController extends Controller
             'materials' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
         ]);
+    } catch (ValidationException $e) {
+        Log::warning('craft_project.validation_failed', [
+            'actor' => 'authenticated_user',
+            'action' => $request->isMethod('post')
+                ? 'create_project'
+                : 'update_project',
+            'reason' => 'invalid_input',
+            'failed_fields' => array_keys($e->errors()),
+            'result' => 'rejected',
+        ]);
+
+        throw $e;
+    }
+
 
         $progress = (int) $data['progress'];
 
@@ -49,6 +64,16 @@ class CraftProjectController extends Controller
         };
 
         if (!$validStatus) {
+            Log::warning('craft_project.validation_failed', [
+                'actor' => 'authenticated_user',
+                'action' => $request->isMethod('post')
+                    ? 'create_project'
+                    : 'update_project',
+                'reason' => 'status_progress_mismatch',
+                'failed_fields' => ['progress'],
+                'result' => 'rejected',
+            ]);
+
             throw ValidationException::withMessages([
                 'progress' => [
                     'Progress must match the selected project status.',
@@ -80,11 +105,19 @@ class CraftProjectController extends Controller
             ->craftProjects()
             ->create($data);
 
+        Log::info('craft_project.created', [
+            'actor' => 'authenticated_user',
+            'action' => 'create_project',
+            'reason' => 'validation_passed_and_saved',
+            'result' => 'success',
+        ]);
+
         return response()->json([
             'message' => 'Project created successfully',
             'data' => $project,
         ], 201);
     }
+
 
     // GET /api/projects/{id}
     public function show(Request $request, string $id): JsonResponse
